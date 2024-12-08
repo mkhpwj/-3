@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>KU 24-2 데이터인문학 [스위프트입실와조] 지도</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <style>
+            html, body, #mapid{
+                height: 100%;
+                margin: 0;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <div id = 'mapid'>
+        </div>
+        <script>
+            var map = L.map('mapid').setView([37.5665851, 126.9782038], 10.5);
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+                attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors'
+            }).addTo(map);
+            var GoogleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var GoogleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var GoogleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var GoogleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                subdomains: 'abcd',
+                minZoom: 1,
+                maxZoom: 16,
+                ext: 'jpg'
+            });
+
+            var baseMaps = {
+                "GoogleStreetMap": GoogleStreets,
+                "GoogleSatelliteMap":GoogleSat,
+                "GoogleTerrain":GoogleTerrain,
+                "GoogleHybrid":GoogleHybrid,
+                "Watercolor":Stamen_Watercolor,
+                "OpenStreetMap":osm
+            };
+           
+            L.control.layers(baseMaps).addTo(map);
+ 
+            var myIcon = L.Icon.extend({
+                 options: {
+                shadowUrl: 'https://dh.aks.ac.kr/~jisun/leafimage/myicon_shadow.png',
+                iconSize: [62, 62],       // 아이콘 크기를 62x62로 설정
+                shadowSize: [60, 30],     // 그림자 크기를 적절히 조정
+                iconAnchor: [31, 62],     // 아이콘 고정 지점을 아이콘의 중심 하단으로 설정
+                shadowAnchor: [15, 30],   // 그림자 고정 지점을 중심 하단으로 설정
+                popupAnchor: [0, -62]     // 팝업 위치를 아이콘 상단으로 조정
+                }
+            });
+
+            var VenueIcon1 = new myIcon({iconUrl: 'https://dh.aks.ac.kr/~jisun/edu/images/0/01/VenueIcon1.png'}),
+                VenueIcon2 = new myIcon({iconUrl: 'https://dh.aks.ac.kr/~jisun/edu/images/e/ee/VenueIcon2.png'});
+            
+
+
+                L.icon = function (options) {
+                    return new L.Icon(options);
+                };
+            
+            //geodata 레이어 생성        
+            var part_1 = L.layerGroup();
+            var part_2 = L.layerGroup();  
+           
+            //geodata 레이어가 모두 체크되어 있도록 설정
+            map.addLayer(part_1)
+            map.addLayer(part_2)
+
+            //geodata 레이어 메뉴 이름 정하기
+            var overlays = {
+                "본래용도:체육": part_1,
+                "본래용도:문화": part_2
+            };
+
+
+            //geodata 레이어 메뉴 설정 / *collapsed값: true false (*true = 커서 갖다대야 메뉴 보이게 / false = 커서 안대도 보이는) /position값: topleft topright bottomleft bottomright
+            var ctr_mapLayers = L.control.layers(null, overlays, {collapsed:false, position:'bottomleft'}).addTo(map);
+
+
+            //하단에 geoJSON을 삽입하세요! : point data
+            var geodata =[    
+            {"type": "Feature", "properties": {"name": "고려대학교_화정체육관_주경기장", "opurpose": "체육", "refurl": "https://kuhj.korea.ac.kr", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.0248, 37.59262]}},
+            {"type": "Feature", "properties": {"name": "고척스카이돔", "opurpose": "체육", "refurl": "https://www.sisul.or.kr/open_content/skydome/", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [126.8672, 37.49814]}},
+            {"type": "Feature", "properties": {"name": "목동_아이스링크", "opurpose": "체육", "refurl": "https://www.mdicerink.com/mdicerink/index.html", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [126.8792, 37.53079]}},
+            {"type": "Feature", "properties": {"name": "문화비축기지_문화마당", "opurpose": "문화", "refurl": "https://parks.seoul.go.kr/template/sub/culturetank.do", "category": "본래용도:문화"}, "geometry": {"type": "Point", "coordinates": [126.8941, 37.57066]}},
+            {"type": "Feature", "properties": {"name": "서울어린이대공원_숲속무대", "opurpose": "문화", "refurl": "https://www.sisul.or.kr/open_content/childrenpark/guidance/facility/rent.jsp", "category": "본래용도:문화"}, "geometry": {"type": "Point", "coordinates": [127.0804, 37.54905]}},
+            {"type": "Feature", "properties": {"name": "서울월드컵경기장", "opurpose": "체육", "refurl": "https://www.sisul.or.kr/open_content/worldcup/", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [126.8971, 37.5683]}},
+            {"type": "Feature", "properties": {"name": "연세대학교_노천극장", "opurpose": "문화", "refurl": "https://ycac.yonsei.ac.kr/", "category": "본래용도:문화"}, "geometry": {"type": "Point", "coordinates": [126.9399, 37.56548]}},
+            {"type": "Feature", "properties": {"name": "올림픽공원_벨로드롬(경륜경기장)", "opurpose": "체육", "refurl": "https://www.ksponco.or.kr/menu.es?mid=a10405060800", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.1233, 37.51689]}},
+            {"type": "Feature", "properties": {"name": "올림픽공원_야외(88잔디마당)", "opurpose": "문화", "refurl": "https://www.ksponco.or.kr/olympicpark/menu.es?mid=a20301031400", "category": "본래용도:문화"}, "geometry": {"type": "Point", "coordinates": [127.1253, 37.51886]}},
+            {"type": "Feature", "properties": {"name": "올림픽공원_SK핸드볼경기장(펜싱경기장)", "opurpose": "체육", "refurl": "https://www.ksponco.or.kr/olympicpark/menu.es?mid=a20301030900", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.1264, 37.51736]}},
+            {"type": "Feature", "properties": {"name": "올림픽공원_KSPO_DOME(체조경기장)", "opurpose": "체육", "refurl": "https://www.ksponco.or.kr/olympicpark/menu.es?mid=a20301030800", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.1274, 37.51922]}},
+            {"type": "Feature", "properties": {"name": "잠실종합운동장_주경기장", "opurpose": "체육", "refurl": "https://stadium.seoul.go.kr/reserve/jamsil/mainstadium", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.0728, 37.51584]}},
+            {"type": "Feature", "properties": {"name": "잠실종합운동장_실내체육관", "opurpose": "체육", "refurl": "https://stadium.seoul.go.kr/reserve/jamsil/inside-stadium", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.076, 37.5162]}},
+            {"type": "Feature", "properties": {"name": "잠실학생체육관_본관", "opurpose": "체육", "refurl": "https://ssg.sen.go.kr", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.0753, 37.51222]}},
+            {"type": "Feature", "properties": {"name": "코엑스_D홀", "opurpose": "문화", "refurl": "https://business.coex.co.kr/exhibition-hall/hall-d/", "category": "본래용도:문화"}, "geometry": {"type": "Point", "coordinates": [127.0589, 37.51254]}},
+            {"type": "Feature", "properties": {"name": "한양대학교_노천극장", "opurpose": "문화", "refurl": "https://hyu.wiki/%EB%85%B8%EC%B2%9C%EA%B7%B9%EC%9E%A5", "category": "본래용도:문화"}, "geometry": {"type": "Point", "coordinates": [127.0453, 37.55552]}},
+            {"type": "Feature", "properties": {"name": "한양대학교_올림픽체육관", "opurpose": "체육", "refurl": "https://hyu.wiki/%EC%98%AC%EB%A6%BC%ED%94%BD%EC%B2%B4%EC%9C%A1%EA%B4%80", "category": "본래용도:체육"}, "geometry": {"type": "Point", "coordinates": [127.05, 37.5565]}}
+        ];
+           
+            L.geoJson(geodata, {
+                onEachFeature: function (feature, layer) {
+                            layer.bindPopup('<a href="' + feature.properties.refurl + '" target="_blank"><center><big><b>' +" " + feature.properties.name + '</b></big></a><br/>' + feature.properties.opurpose)},
+
+
+                pointToLayer: function(feature, latlng) {
+                    switch (feature.properties.category) {
+                                //스위프트조 category
+                                case '본래용도:체육': return L.marker(latlng, {icon: VenueIcon1}).addTo(part_1);
+                                case '본래용도:문화': return L.marker(latlng, {icon: VenueIcon2}).addTo(part_2);                        }
+                    }
+                });
+
+
+        </script>
+    </body>
+</html>
